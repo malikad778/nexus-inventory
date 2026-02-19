@@ -13,6 +13,7 @@ class StatusGrid extends Component
         $stats = [];
 
         foreach ($drivers as $driver) {
+            /** @var NexusSyncJob|null $lastError */
             $lastError = NexusSyncJob::where('channel', $driver)->where('status', 'failed')->latest()->first();
             $lastThrottle = \Illuminate\Support\Facades\DB::table('nexus_rate_limit_logs')
                 ->where('channel', $driver)
