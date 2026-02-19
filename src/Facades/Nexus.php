@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static \Adnan\LaravelNexus\Contracts\InventoryDriver driver(string $driver = null)
+ * @method static \Adnan\LaravelNexus\Contracts\InventoryDriver channel(string $name = null)
+ * @method static \Adnan\LaravelNexus\InventoryManager context(array $context)
+ * @method static \Adnan\LaravelNexus\Builders\CatalogSyncBuilder catalog()
+ * @method static \Adnan\LaravelNexus\Builders\BatchBuilder batch(string $name = null)
  *
  * @see \Adnan\LaravelNexus\InventoryManager
  */

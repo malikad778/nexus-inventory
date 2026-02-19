@@ -1,6 +1,6 @@
 <?php
 
-namespace Adnan\LaravelNexus\Webhooks\Verifiers;
+namespace Adnan\LaravelNexus\Contracts;
 
 use Illuminate\Http\Request;
 

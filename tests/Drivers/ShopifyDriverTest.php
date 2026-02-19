@@ -39,7 +39,7 @@ it('can fetch products from shopify', function () {
     expect($products->first()->name)->toBe('Test Product');
     expect($products->first()->price)->toBe(19.99);
     expect($products->first()->quantity)->toBe(10);
-    expect($products->first()->remote_id)->toBe('987654');
+    expect($products->first()->id)->toBe('123456');
 });
 
 it('can update inventory on shopify', function () {

@@ -34,7 +34,7 @@ it('can fetch products from etsy', function () {
     expect($products->first()->name)->toBe('Etsy Item');
     expect($products->first()->price)->toBe(20.00);
     expect($products->first()->quantity)->toBe(5);
-    expect($products->first()->remote_id)->toBe('111');
+    expect($products->first()->id)->toBe('111');
 });
 
 it('can update inventory on etsy', function () {

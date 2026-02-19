@@ -41,6 +41,7 @@ class PushInventoryJob implements ShouldBeUnique, ShouldQueue
         $rate = config("nexus.rate_limits.{$this->channel}.rate", 1.0);
 
         if (! $limiter->acquire($this->channel, $capacity, $rate)) {
+            \Adnan\LaravelNexus\Events\ChannelThrottled::dispatch($this->channel, 5);
             $this->release(5); // Release back to queue with delay
 
             return;
@@ -51,5 +52,13 @@ class PushInventoryJob implements ShouldBeUnique, ShouldQueue
         if (! $driver->updateInventory($this->remoteId, $this->quantity)) {
             $this->fail(new \Exception("Failed to update inventory for {$this->channel}: {$this->remoteId}"));
         }
+    }
+
+    public function failed(\Throwable $exception): void
+    {
+        \Adnan\LaravelNexus\Events\InventorySyncFailed::dispatch(
+            $this->channel,
+            $exception->getMessage()
+        );
     }
 }

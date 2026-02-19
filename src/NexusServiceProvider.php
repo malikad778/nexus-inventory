@@ -14,7 +14,7 @@ class NexusServiceProvider extends PackageServiceProvider
             ->name('laravel-nexus')
             ->hasConfigFile('nexus')
             ->hasViews()
-            ->hasMigrations(['create_nexus_tables', 'create_nexus_dlq_table', 'create_nexus_webhook_table'])
+            ->hasMigrations(['create_nexus_tables', 'create_nexus_dlq_table', 'create_nexus_webhook_table', 'create_audit_remediation_tables'])
             ->hasCommand(NexusCommand::class);
     }
 

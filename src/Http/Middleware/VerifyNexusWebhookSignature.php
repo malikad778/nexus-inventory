@@ -2,8 +2,8 @@
 
 namespace Adnan\LaravelNexus\Http\Middleware;
 
-use Adnan\LaravelNexus\Webhooks\Verifiers\AmazonWebhookVerifier;
-use Adnan\LaravelNexus\Webhooks\Verifiers\ShopifyWebhookVerifier;
+use Adnan\LaravelNexus\Contracts\WebhookVerifier;
+use Adnan\LaravelNexus\Facades\Nexus;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,10 +13,7 @@ class VerifyNexusWebhookSignature
 {
     public function handle(Request $request, Closure $next, ?string $channel = null): Response
     {
-        // Loopback/Testing bypass if needed (optional)
-
         if (! $channel) {
-            // Try to guess from route param
             $channel = $request->route('channel');
         }
 
@@ -43,14 +40,16 @@ class VerifyNexusWebhookSignature
         return $next($request);
     }
 
-    protected function resolveVerifier(?string $channel): ?\Adnan\LaravelNexus\Webhooks\Verifiers\WebhookVerifier
+    protected function resolveVerifier(?string $channel): ?WebhookVerifier
     {
-        return match ($channel) {
-            'shopify' => new ShopifyWebhookVerifier,
-            'amazon' => new AmazonWebhookVerifier,
-            // 'woocommerce' => new WooCommerceWebhookVerifier(),
-            // 'etsy' => new EtsyWebhookVerifier(),
-            default => null,
-        };
+        if (! $channel) {
+            return null;
+        }
+
+        try {
+            return Nexus::driver($channel)->getWebhookVerifier();
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

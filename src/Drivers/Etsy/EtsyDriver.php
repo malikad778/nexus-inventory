@@ -4,9 +4,12 @@ namespace Adnan\LaravelNexus\Drivers\Etsy;
 
 use Adnan\LaravelNexus\Contracts\InventoryDriver;
 use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
+use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Enumerable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 class EtsyDriver implements InventoryDriver
 {
@@ -45,7 +48,7 @@ class EtsyDriver implements InventoryDriver
         throw new \RuntimeException('No valid access token available for Etsy. Please Configure ETSY_KEYSTRING and ETSY_REFRESH_TOKEN.');
     }
 
-    public function getProducts(Carbon $since): Enumerable
+    public function getProducts(Carbon $since): Collection
     {
         $accessToken = $this->getAccessToken();
 
@@ -62,16 +65,23 @@ class EtsyDriver implements InventoryDriver
         }
 
         return collect($response->json('results', []))
-            ->map(function ($listing) {
-                return new NexusProduct(
-                    sku: $listing['skus'][0] ?? '', // Etsy listings can have multiple SKUs
-                    name: $listing['title'],
-                    price: (float) ($listing['price']['amount'] / $listing['price']['divisor']),
-                    quantity: (int) $listing['quantity'],
-                    remote_id: (string) $listing['listing_id'],
-                    remote_data: $listing,
-                );
-            });
+            ->map(fn (array $listing) => NexusProduct::fromEtsy($listing));
+    }
+
+    public function fetchProduct(string $remoteId): NexusProduct
+    {
+        $accessToken = $this->getAccessToken();
+
+        $response = Http::withHeaders([
+            'x-api-key' => $this->config['client_id'],
+            'Authorization' => 'Bearer '.$accessToken,
+        ])->get("https://api.etsy.com/v3/application/listings/{$remoteId}");
+
+        if ($response->failed()) {
+            $response->throw();
+        }
+
+        return NexusProduct::fromEtsy($response->json());
     }
 
     public function updateInventory(string $remoteId, int $quantity): bool
@@ -107,9 +117,13 @@ class EtsyDriver implements InventoryDriver
         $inventory = $inventoryResponse->json();
 
         // Update quantity for all products (simplified)
-        foreach ($inventory['products'] as &$product) {
-            foreach ($product['offerings'] as &$offering) {
-                $offering['quantity'] = $quantity;
+        if (isset($inventory['products'])) {
+            foreach ($inventory['products'] as &$product) {
+                if (isset($product['offerings'])) {
+                    foreach ($product['offerings'] as &$offering) {
+                        $offering['quantity'] = $quantity;
+                    }
+                }
             }
         }
 
@@ -119,6 +133,50 @@ class EtsyDriver implements InventoryDriver
         ])->put("https://api.etsy.com/v3/application/shops/{$this->config['shop_id']}/listings/{$remoteId}/inventory", $inventory);
 
         return $response->successful();
+    }
+
+    public function pushInventory(NexusInventoryUpdate $update): bool
+    {
+        if (!$update->remoteId) {
+            return false;
+        }
+        return $this->updateInventory($update->remoteId, $update->quantity);
+    }
+
+    public function verifyWebhookSignature(Request $request): bool
+    {
+        return $this->getWebhookVerifier()->verify($request);
+    }
+
+    public function getWebhookVerifier(): \Adnan\LaravelNexus\Contracts\WebhookVerifier
+    {
+        return new \Adnan\LaravelNexus\Webhooks\Verifiers\EtsyWebhookVerifier($this->config);
+    }
+
+    public function parseWebhookPayload(Request $request): NexusInventoryUpdate
+    {
+         $payload = $request->json()->all();
+         
+         // Assuming 'listings_updated' event structure
+         $id = (string) ($payload['listing_id'] ?? '');
+         $qty = (int) ($payload['quantity'] ?? 0); // Etsy payloads vary, often just ID
+         
+         return new NexusInventoryUpdate(
+             sku: 'ETSY-' . $id,
+             quantity: $qty, // Often 0 and triggers a fetch
+             remoteId: $id,
+             meta: $payload
+         );
+    }
+
+    public function getRateLimitConfig(): RateLimitConfig
+    {
+        // Etsy limit: 10 calls/sec usually
+        return new RateLimitConfig(
+            capacity: 10,
+            rate: 2, 
+            cost: 1
+        );
     }
 
     public function getChannelName(): string
