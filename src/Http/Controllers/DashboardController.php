@@ -71,6 +71,7 @@ class DashboardController extends Controller
 
         // PHPStan might infer array|object, force explicit object check or type hint
         if ($job && is_object($job) && $job->status === 'failed') {
+            /** @var object{status: string, payload: string} $job */
             // Dispatch the job again
             // We need to reconstruct the job object from payload?
             // Or typically, we just push the class and payload back to queue.
