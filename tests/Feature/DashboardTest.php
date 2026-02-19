@@ -18,7 +18,7 @@ class DashboardTest extends \Adnan\LaravelNexus\Tests\TestCase
     {
         $response = $this->get('/nexus');
         $response->assertOk();
-        
+
         if (class_exists(\Livewire\Livewire::class)) {
             $response->assertSeeLivewire('nexus-status-grid');
         } else {

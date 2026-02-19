@@ -21,7 +21,7 @@ class StatusGrid extends Component
         }
 
         return view('nexus::livewire.status-grid', [
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
 }

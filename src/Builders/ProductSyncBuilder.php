@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 class ProductSyncBuilder
 {
     protected mixed $product;
+
     protected ?int $quantity = null;
+
     protected array $channels = [];
 
     public function __construct(mixed $product)
@@ -21,6 +23,7 @@ class ProductSyncBuilder
     public function updateInventory(int $quantity): self
     {
         $this->quantity = $quantity;
+
         return $this;
     }
 
@@ -31,9 +34,10 @@ class ProductSyncBuilder
 
         foreach ($this->channels as $channel) {
             $remoteId = $this->resolveRemoteId($channel);
-            
-            if (!$remoteId) {
+
+            if (! $remoteId) {
                 $results[$channel] = false;
+
                 continue;
             }
 
@@ -47,7 +51,7 @@ class ProductSyncBuilder
             // In a sync() call from the builder, we might want to dispatch it to the queue
             // but the spec example `Nexus::product($product)->updateInventory(42)->sync(['shopify'])`
             // implies an immediate or at least orchestrated action.
-            
+
             $results[$channel] = PushInventoryJob::dispatch($channel, $update);
         }
 

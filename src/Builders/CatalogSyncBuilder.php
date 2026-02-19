@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Bus;
 class CatalogSyncBuilder
 {
     protected array $channels = [];
+
     protected ?string $queue = null;
+
     protected string $connection = 'redis';
+
     protected mixed $products = null;
 
     public function __construct(mixed $products = null)
@@ -45,7 +48,7 @@ class CatalogSyncBuilder
 
     public function syncAll(array $channels = []): \Illuminate\Bus\Batch
     {
-        $channels = ! empty($channels) ? $channels : (!empty($this->channels) ? $this->channels : array_keys(config('nexus.drivers', [])));
+        $channels = ! empty($channels) ? $channels : (! empty($this->channels) ? $this->channels : array_keys(config('nexus.drivers', [])));
 
         $jobs = [];
         foreach ($channels as $channel) {

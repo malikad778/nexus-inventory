@@ -74,9 +74,9 @@ class NexusProduct implements Arrayable
     {
         // Amazon SP-API items can have variations in relationships
         $variants = collect($data['relationships'] ?? [])
-            ->filter(fn($r) => $r['type'] === 'VARIATION')
-            ->flatMap(fn($r) => $r['childAsins'] ?? [])
-            ->map(fn($asin) => new NexusVariant(
+            ->filter(fn ($r) => $r['type'] === 'VARIATION')
+            ->flatMap(fn ($r) => $r['childAsins'] ?? [])
+            ->map(fn ($asin) => new NexusVariant(
                 id: (string) $asin,
                 sku: '', // ASINs don't always expose SKU in relationships
                 price: null,
@@ -104,7 +104,7 @@ class NexusProduct implements Arrayable
             sku: $p['sku'] ?? '',
             price: isset($p['offerings'][0]['price']) ? (float) ($p['offerings'][0]['price']['amount'] / $p['offerings'][0]['price']['divisor']) : 0.0,
             quantity: (int) ($p['offerings'][0]['quantity'] ?? 0),
-            options: array_map(fn($pv) => $pv['value'], $p['property_values'] ?? []),
+            options: array_map(fn ($pv) => $pv['value'], $p['property_values'] ?? []),
             remoteData: $p
         ));
 

@@ -27,7 +27,7 @@ class DeadLetterQueue extends Component
     public function render()
     {
         return view('nexus::livewire.dead-letter-queue', [
-            'jobs' => NexusDeadLetterQueue::latest()->paginate(10)
+            'jobs' => NexusDeadLetterQueue::latest()->paginate(10),
         ]);
     }
 }

@@ -18,11 +18,11 @@ class WebhookLog extends Component
 
         if ($this->search) {
             $query->where('channel', 'like', "%{$this->search}%")
-                  ->orWhere('event', 'like', "%{$this->search}%");
+                ->orWhere('event', 'like', "%{$this->search}%");
         }
 
         return view('nexus::livewire.webhook-log', [
-            'webhooks' => $query->paginate(10)
+            'webhooks' => $query->paginate(10),
         ]);
     }
 }
