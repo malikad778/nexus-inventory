@@ -3,13 +3,13 @@
 namespace Adnan\LaravelNexus\Drivers\WooCommerce;
 
 use Adnan\LaravelNexus\Contracts\InventoryDriver;
-use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
 
 class WooCommerceDriver implements InventoryDriver
 {
@@ -17,7 +17,7 @@ class WooCommerceDriver implements InventoryDriver
 
     public function __construct(protected array $config)
     {
-        $this->baseUrl = rtrim($this->config['store_url'], '/') . '/wp-json/wc/v3';
+        $this->baseUrl = rtrim($this->config['store_url'], '/').'/wp-json/wc/v3';
     }
 
     public function getProducts(Carbon $since): Collection
@@ -67,7 +67,7 @@ class WooCommerceDriver implements InventoryDriver
 
     public function pushInventory(NexusInventoryUpdate $update): bool
     {
-        if (!$update->remoteId) {
+        if (! $update->remoteId) {
             return false;
         }
 
@@ -87,7 +87,7 @@ class WooCommerceDriver implements InventoryDriver
     public function parseWebhookPayload(Request $request): NexusInventoryUpdate
     {
         $payload = $request->json()->all();
-        
+
         // Basic mapping for product.updated
         $id = (string) ($payload['id'] ?? '');
         $sku = $payload['sku'] ?? '';
@@ -106,7 +106,7 @@ class WooCommerceDriver implements InventoryDriver
         // WooCommerce API limit varies by host, but default is often ~25 req/10sec
         return new RateLimitConfig(
             capacity: 20,
-            rate: 2, 
+            rate: 2,
             cost: 1
         );
     }

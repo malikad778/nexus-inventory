@@ -3,13 +3,13 @@
 namespace Adnan\LaravelNexus\Drivers\Shopify;
 
 use Adnan\LaravelNexus\Contracts\InventoryDriver;
-use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
 
 class ShopifyDriver implements InventoryDriver
 {
@@ -17,7 +17,7 @@ class ShopifyDriver implements InventoryDriver
 
     public function __construct(protected array $config)
     {
-        $this->baseUrl = "https://{$this->config['shop_url']}/admin/api/" . ($this->config['api_version'] ?? '2024-01');
+        $this->baseUrl = "https://{$this->config['shop_url']}/admin/api/".($this->config['api_version'] ?? '2024-01');
     }
 
     public function getProducts(Carbon $since): Collection
@@ -60,8 +60,8 @@ class ShopifyDriver implements InventoryDriver
         }
 
         $inventoryItemId = $variantResponse->json('variant.inventory_item_id');
-        
-        if (!$inventoryItemId) {
+
+        if (! $inventoryItemId) {
             return false;
         }
 
@@ -83,9 +83,9 @@ class ShopifyDriver implements InventoryDriver
         $remoteId = $update->remoteId;
 
         // Fallback: lookup by SKU if no remote ID (simplified logic for now)
-        if (!$remoteId) {
+        if (! $remoteId) {
             // In a real implementation, we'd search for the product by SKU here
-            return false; 
+            return false;
         }
 
         return $this->updateInventory($remoteId, $update->quantity);
@@ -98,7 +98,7 @@ class ShopifyDriver implements InventoryDriver
 
     public function getWebhookVerifier(): \Adnan\LaravelNexus\Contracts\WebhookVerifier
     {
-        return new \Adnan\LaravelNexus\Webhooks\Verifiers\ShopifyWebhookVerifier();
+        return new \Adnan\LaravelNexus\Webhooks\Verifiers\ShopifyWebhookVerifier;
     }
 
     public function parseWebhookPayload(Request $request): NexusInventoryUpdate

@@ -8,31 +8,36 @@ use Illuminate\Support\Facades\Bus;
 class CatalogSyncBuilder
 {
     protected array $channels = [];
+
     protected ?string $queue = null;
+
     protected string $connection = 'redis';
 
     public function channels(array $channels): self
     {
         $this->channels = $channels;
+
         return $this;
     }
 
     public function onQueue(string $queue): self
     {
         $this->queue = $queue;
+
         return $this;
     }
 
     public function onConnection(string $connection): self
     {
         $this->connection = $connection;
+
         return $this;
     }
 
     public function sync(): \Illuminate\Bus\Batch
     {
-        $channels = !empty($this->channels) 
-            ? $this->channels 
+        $channels = ! empty($this->channels)
+            ? $this->channels
             : array_keys(config('nexus.drivers', []));
 
         $jobs = [];

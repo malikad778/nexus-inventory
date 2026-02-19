@@ -2,12 +2,12 @@
 
 namespace Adnan\LaravelNexus\Contracts;
 
+use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
+use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Http\Request;
-use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
-use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
-use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
 
 interface InventoryDriver
 {

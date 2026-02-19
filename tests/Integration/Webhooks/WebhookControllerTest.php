@@ -26,8 +26,8 @@ class WebhookControllerTest extends \Adnan\LaravelNexus\Tests\TestCase
         $payloadData = [
             'id' => 123456,
             'variants' => [
-                ['id' => 987654, 'inventory_quantity' => 10, 'sku' => 'SKU-1']
-            ]
+                ['id' => 987654, 'inventory_quantity' => 10, 'sku' => 'SKU-1'],
+            ],
         ];
         $payload = json_encode($payloadData);
         // Hash content as string
@@ -56,8 +56,8 @@ class WebhookControllerTest extends \Adnan\LaravelNexus\Tests\TestCase
 
         // Check InventoryUpdated Event
         Event::assertDispatched(\Adnan\LaravelNexus\Events\InventoryUpdated::class, function ($event) {
-             return $event->channel === 'shopify' &&
-                    $event->update->remoteId === '123456';
+            return $event->channel === 'shopify' &&
+                   $event->update->remoteId === '123456';
         });
     }
 

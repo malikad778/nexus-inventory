@@ -2,18 +2,21 @@
 
 namespace Adnan\LaravelNexus\Builders;
 
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
 
 class BatchBuilder
 {
     protected string $name = 'nexus-batch';
+
     protected array $jobs = [];
+
     protected bool $allowFailures = true;
 
     public function name(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -24,6 +27,7 @@ class BatchBuilder
         } else {
             $this->jobs[] = $jobs;
         }
+
         return $this;
     }
 

@@ -3,13 +3,13 @@
 namespace Adnan\LaravelNexus\Drivers\Etsy;
 
 use Adnan\LaravelNexus\Contracts\InventoryDriver;
-use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
 
 class EtsyDriver implements InventoryDriver
 {
@@ -137,9 +137,10 @@ class EtsyDriver implements InventoryDriver
 
     public function pushInventory(NexusInventoryUpdate $update): bool
     {
-        if (!$update->remoteId) {
+        if (! $update->remoteId) {
             return false;
         }
+
         return $this->updateInventory($update->remoteId, $update->quantity);
     }
 
@@ -155,18 +156,18 @@ class EtsyDriver implements InventoryDriver
 
     public function parseWebhookPayload(Request $request): NexusInventoryUpdate
     {
-         $payload = $request->json()->all();
-         
-         // Assuming 'listings_updated' event structure
-         $id = (string) ($payload['listing_id'] ?? '');
-         $qty = (int) ($payload['quantity'] ?? 0); // Etsy payloads vary, often just ID
-         
-         return new NexusInventoryUpdate(
-             sku: 'ETSY-' . $id,
-             quantity: $qty, // Often 0 and triggers a fetch
-             remoteId: $id,
-             meta: $payload
-         );
+        $payload = $request->json()->all();
+
+        // Assuming 'listings_updated' event structure
+        $id = (string) ($payload['listing_id'] ?? '');
+        $qty = (int) ($payload['quantity'] ?? 0); // Etsy payloads vary, often just ID
+
+        return new NexusInventoryUpdate(
+            sku: 'ETSY-'.$id,
+            quantity: $qty, // Often 0 and triggers a fetch
+            remoteId: $id,
+            meta: $payload
+        );
     }
 
     public function getRateLimitConfig(): RateLimitConfig
@@ -174,7 +175,7 @@ class EtsyDriver implements InventoryDriver
         // Etsy limit: 10 calls/sec usually
         return new RateLimitConfig(
             capacity: 10,
-            rate: 2, 
+            rate: 2,
             cost: 1
         );
     }

@@ -15,8 +15,8 @@ class InventoryManager extends Manager
         $instance = clone $this;
         $instance->context = $context;
         // Clear resolved drivers in the clone so we create fresh ones with new context
-        $instance->forgetDrivers(); 
-        
+        $instance->forgetDrivers();
+
         return $instance;
     }
 
@@ -27,15 +27,16 @@ class InventoryManager extends Manager
 
     public function catalog(): Builders\CatalogSyncBuilder
     {
-        return new Builders\CatalogSyncBuilder();
+        return new Builders\CatalogSyncBuilder;
     }
 
     public function batch(?string $name = null): Builders\BatchBuilder
     {
-        $builder = new Builders\BatchBuilder();
+        $builder = new Builders\BatchBuilder;
         if ($name) {
             $builder->name($name);
         }
+
         return $builder;
     }
 

@@ -57,14 +57,14 @@ it('dispatches failure event on exception', function () {
     \Illuminate\Support\Facades\Event::fake();
 
     $job = new PushInventoryJob('shopify', '123', 5);
-    
+
     try {
         $job->handle($limiter);
     } catch (Exception $e) {
         // execute failed() manually as worker would
         $job->failed($e);
     }
-    
+
     \Illuminate\Support\Facades\Event::assertDispatched(\Adnan\LaravelNexus\Events\InventorySyncFailed::class, function ($event) {
         return $event->channel === 'shopify' && $event->reason === 'API Error';
     });

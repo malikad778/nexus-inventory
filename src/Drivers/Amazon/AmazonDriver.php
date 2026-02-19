@@ -3,14 +3,13 @@
 namespace Adnan\LaravelNexus\Drivers\Amazon;
 
 use Adnan\LaravelNexus\Contracts\InventoryDriver;
-use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Adnan\LaravelNexus\DataTransferObjects\RateLimitConfig;
-use Adnan\LaravelNexus\Webhooks\Verifiers\AmazonWebhookVerifier;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
 
 class AmazonDriver implements InventoryDriver
 {
@@ -41,9 +40,9 @@ class AmazonDriver implements InventoryDriver
     public function getProducts(Carbon $since): Collection
     {
         $accessToken = $this->getAccessToken();
-        
-        $endpoint = "https://sellingpartnerapi-na.amazon.com/catalog/2022-04-01/items";
-        
+
+        $endpoint = 'https://sellingpartnerapi-na.amazon.com/catalog/2022-04-01/items';
+
         $signer = new AwsV4Signer(
             $this->config['access_key_id'],
             $this->config['secret_access_key'],
@@ -51,12 +50,12 @@ class AmazonDriver implements InventoryDriver
         );
 
         $queryParams = [
-            'marketplaceIds' => $this->config['marketplace_id'] ?? 'ATVPDKIKX0DER', 
+            'marketplaceIds' => $this->config['marketplace_id'] ?? 'ATVPDKIKX0DER',
             'pageSize' => 20,
-            'includedData' => 'summaries,attributes'
+            'includedData' => 'summaries,attributes',
         ];
-        
-        $urlWithQuery = $endpoint . '?' . http_build_query($queryParams);
+
+        $urlWithQuery = $endpoint.'?'.http_build_query($queryParams);
 
         $headers = [
             'x-amz-access-token' => $accessToken,
@@ -75,6 +74,7 @@ class AmazonDriver implements InventoryDriver
 
         return collect($items)->map(function ($item) {
             $summary = $item['summaries'][0] ?? [];
+
             return NexusProduct::fromAmazon($item); // Use the static factory we added in DTO
         });
     }
@@ -82,15 +82,15 @@ class AmazonDriver implements InventoryDriver
     public function fetchProduct(string $remoteId): NexusProduct
     {
         $accessToken = $this->getAccessToken();
-        
+
         $endpoint = "https://sellingpartnerapi-na.amazon.com/catalog/2022-04-01/items/{$remoteId}";
-        
+
         $queryParams = [
             'marketplaceIds' => $this->config['marketplace_id'] ?? 'ATVPDKIKX0DER',
-            'includedData' => 'summaries,attributes,images'
+            'includedData' => 'summaries,attributes,images',
         ];
 
-        $urlWithQuery = $endpoint . '?' . http_build_query($queryParams);
+        $urlWithQuery = $endpoint.'?'.http_build_query($queryParams);
 
         $signer = new AwsV4Signer(
             $this->config['access_key_id'],
@@ -108,7 +108,7 @@ class AmazonDriver implements InventoryDriver
         $response = Http::withHeaders($signedHeaders)->get($urlWithQuery);
 
         if ($response->failed()) {
-            throw new \RuntimeException("Failed to fetch Amazon product: " . $response->body());
+            throw new \RuntimeException('Failed to fetch Amazon product: '.$response->body());
         }
 
         return NexusProduct::fromAmazon($response->json());
@@ -165,9 +165,10 @@ class AmazonDriver implements InventoryDriver
 
     public function pushInventory(NexusInventoryUpdate $update): bool
     {
-        if (!$update->remoteId) {
+        if (! $update->remoteId) {
             return false; // Amazon usually requires ASIN or SKU
         }
+
         return $this->updateInventory($update->remoteId, $update->quantity);
     }
 
@@ -186,11 +187,11 @@ class AmazonDriver implements InventoryDriver
         // Parse SNS notification
         $content = json_decode($request->getContent(), true);
         $message = json_decode($content['Message'] ?? '{}', true);
-        
+
         // Logic to extract SKU/ASIN from common Notification Types (e.g. ListingsItemStatusChange)
         $sku = $message['SellerSKU'] ?? 'unknown';
         $asin = $message['ASIN'] ?? '';
-        
+
         return new NexusInventoryUpdate(
             sku: $sku,
             quantity: 0, // Often need to fetch fresh
@@ -198,13 +199,13 @@ class AmazonDriver implements InventoryDriver
             meta: $message
         );
     }
-    
+
     public function getRateLimitConfig(): RateLimitConfig
     {
         // SP-API is typically 5-10 requests/sec with burst
         return new RateLimitConfig(
             capacity: 5,
-            rate: 1, 
+            rate: 1,
             cost: 1
         );
     }

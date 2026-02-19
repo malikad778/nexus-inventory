@@ -16,6 +16,7 @@ uses(RefreshDatabase::class);
 class TestProduct extends Model
 {
     protected $table = 'test_products';
+
     protected $guarded = [];
 }
 

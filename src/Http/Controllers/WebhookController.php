@@ -46,21 +46,21 @@ class WebhookController extends Controller
         try {
             $driver = \Adnan\LaravelNexus\Facades\Nexus::driver($channel);
             $updateDto = $driver->parseWebhookPayload($request);
-            
+
             \Adnan\LaravelNexus\Events\InventoryUpdated::dispatch(
                 $channel,
                 $updateDto,
                 true
             );
-            
+
             DB::table('nexus_webhook_logs')->where('id', $logId)->update(['status' => 'processed']);
-            
+
         } catch (\Exception $e) {
             DB::table('nexus_webhook_logs')->where('id', $logId)->update([
                 'status' => 'failed',
-                'exception' => $e->getMessage()
+                'exception' => $e->getMessage(),
             ]);
-            
+
             // We don't fail the response, just log internally
             // Or maybe we should return 500? Webhooks usually prefer 200 explicitly if received.
         }

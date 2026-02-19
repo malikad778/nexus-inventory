@@ -3,7 +3,6 @@
 namespace Adnan\LaravelNexus\DataTransferObjects;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Collection;
 
 class NexusVariant implements Arrayable
 {

@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 class NexusProduct implements Arrayable
 {
     /**
-     * @param Collection<int, NexusVariant> $variants
+     * @param  Collection<int, NexusVariant>  $variants
      */
     public function __construct(
         public string $id,
@@ -23,7 +23,7 @@ class NexusProduct implements Arrayable
 
     public static function fromShopify(array $data): self
     {
-        $variants = collect($data['variants'] ?? [])->map(fn($v) => new NexusVariant(
+        $variants = collect($data['variants'] ?? [])->map(fn ($v) => new NexusVariant(
             id: (string) $v['id'],
             sku: $v['sku'] ?? '',
             price: (float) $v['price'],
