@@ -29,7 +29,7 @@ return new class extends Migration
                 $table->id();
                 $table->string('type'); // catalog, channel, push
                 $table->string('batch_id')->nullable()->index();
-                $table->string('status'); // pending, processing, completed, failed
+                $table->string('status'); // pending, processing, failed, resolved, retried
                 $table->json('meta')->nullable();
                 $table->timestamp('started_at')->nullable();
                 $table->timestamp('finished_at')->nullable();

@@ -18,6 +18,13 @@ class DeadLetterQueue extends Component
         $this->dispatch('notify', 'Job queued for retry');
     }
 
+    public function resolve(int $id)
+    {
+        $job = NexusDeadLetterQueue::findOrFail($id);
+        $job->update(['status' => 'resolved']);
+        $this->dispatch('notify', 'Job marked as resolved');
+    }
+
     public function dismiss(int $id)
     {
         NexusDeadLetterQueue::destroy($id);
