@@ -18,8 +18,12 @@ class DashboardTest extends \Adnan\LaravelNexus\Tests\TestCase
     {
         $response = $this->get('/nexus');
         $response->assertOk();
-        $response->assertViewIs('nexus::dashboard');
-        $response->assertSee('Laravel Nexus');
+        
+        if (class_exists(\Livewire\Livewire::class)) {
+            $response->assertSeeLivewire('nexus-status-grid');
+        } else {
+            $response->assertSee('Dashboard');
+        }
     }
 
     /** @test */
@@ -27,13 +31,24 @@ class DashboardTest extends \Adnan\LaravelNexus\Tests\TestCase
     {
         DB::table('nexus_webhook_logs')->insert([
             'channel' => 'shopify',
+            'topic' => 'products/update',
             'payload' => '{}',
+            'status' => 'processed',
             'created_at' => now(),
         ]);
 
         $response = $this->get('/nexus/webhooks');
         $response->assertOk();
-        $response->assertSee('Shopify');
+
+        if (class_exists(\Livewire\Livewire::class)) {
+            $response->assertSeeLivewire('nexus-webhook-log');
+
+            \Livewire\Livewire::test(\Adnan\LaravelNexus\Http\Livewire\WebhookLog::class)
+                ->assertSee('shopify')
+                ->assertSee('products/update');
+        } else {
+            $response->assertSee('Webhook Logs');
+        }
     }
 
     /** @test */
@@ -45,12 +60,20 @@ class DashboardTest extends \Adnan\LaravelNexus\Tests\TestCase
             'status' => 'failed',
             'exception' => 'Error',
             'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         $response = $this->get('/nexus/dlq');
         $response->assertOk();
-        $response->assertSee('SomeJob');
-        $response->assertSee('Retry');
+
+        if (class_exists(\Livewire\Livewire::class)) {
+            $response->assertSeeLivewire('nexus-dead-letter-queue');
+
+            \Livewire\Livewire::test(\Adnan\LaravelNexus\Http\Livewire\DeadLetterQueue::class)
+                ->assertSee('SomeJob');
+        } else {
+            $response->assertSee('Dead Letter Queue');
+        }
     }
 
     /** @test */

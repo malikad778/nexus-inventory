@@ -49,40 +49,72 @@ class NexusProduct implements Arrayable
 
     public static function fromWooCommerce(array $data): self
     {
-        // WooCommerce structure handling... placeholder for now purely to satisfy static factory requirement
+        $variants = collect($data['variations'] ?? [])->map(fn ($v) => new NexusVariant(
+            id: (string) ($v['id'] ?? $v), // Could be just ID
+            sku: $v['sku'] ?? '',
+            price: (float) ($v['price'] ?? 0),
+            quantity: (int) ($v['stock_quantity'] ?? 0),
+            options: array_values($v['attributes'] ?? []),
+            remoteData: $v
+        ));
+
         return new self(
             id: (string) $data['id'],
             name: $data['name'],
             sku: $data['sku'] ?? '',
             price: (float) ($data['price'] ?? 0),
             quantity: (int) ($data['stock_quantity'] ?? 0),
-            variants: collect(), // TODO: Parse variations
-            remoteData: $data
+            variants: $variants,
+            remoteData: $data,
+            barcode: $data['barcode'] ?? null
         );
     }
 
     public static function fromAmazon(array $data): self
     {
+        // Amazon SP-API items can have variations in relationships
+        $variants = collect($data['relationships'] ?? [])
+            ->filter(fn($r) => $r['type'] === 'VARIATION')
+            ->flatMap(fn($r) => $r['childAsins'] ?? [])
+            ->map(fn($asin) => new NexusVariant(
+                id: (string) $asin,
+                sku: '', // ASINs don't always expose SKU in relationships
+                price: null,
+                quantity: null,
+                options: [],
+                remoteData: ['asin' => $asin]
+            ));
+
         return new self(
-            id: $data['asin'],
-            name: $data['item_name'] ?? 'Unknown',
-            sku: $data['seller_sku'],
-            price: null, // Often unavailable in basic reports
+            id: (string) ($data['asin'] ?? ''),
+            name: $data['summaries'][0]['itemName'] ?? $data['item_name'] ?? 'Unknown',
+            sku: $data['seller_sku'] ?? '',
+            price: null,
             quantity: (int) ($data['quantity'] ?? 0),
-            variants: collect(),
+            variants: $variants,
             remoteData: $data
         );
     }
 
     public static function fromEtsy(array $data): self
     {
+        // Etsy variations are in offerings
+        $variants = collect($data['products'] ?? [])->map(fn ($p) => new NexusVariant(
+            id: (string) ($p['product_id'] ?? ''),
+            sku: $p['sku'] ?? '',
+            price: isset($p['offerings'][0]['price']) ? (float) ($p['offerings'][0]['price']['amount'] / $p['offerings'][0]['price']['divisor']) : 0.0,
+            quantity: (int) ($p['offerings'][0]['quantity'] ?? 0),
+            options: array_map(fn($pv) => $pv['value'], $p['property_values'] ?? []),
+            remoteData: $p
+        ));
+
         return new self(
             id: (string) $data['listing_id'],
             name: $data['title'],
-            sku: $data['skus'][0] ?? '', // Use first SKU if available
+            sku: $data['skus'][0] ?? '',
             price: (float) (($data['price']['amount'] ?? 0) / ($data['price']['divisor'] ?? 100)),
             quantity: (int) ($data['quantity'] ?? 0),
-            variants: collect(),
+            variants: $variants,
             remoteData: $data
         );
     }

@@ -13,6 +13,8 @@ return new class extends Migration
             $table->morphs('syncable');
             $table->string('channel');
             $table->string('remote_id');
+            $table->string('remote_sku')->nullable();
+            $table->json('channel_meta')->nullable();
             $table->timestamp('last_synced_at')->nullable();
             $table->timestamps();
 

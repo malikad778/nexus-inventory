@@ -23,6 +23,13 @@ class NexusServiceProvider extends PackageServiceProvider
         $this->app->singleton('nexus', function ($app) {
             return new InventoryManager($app);
         });
+
+        // Register Livewire Components
+        if (class_exists(\Livewire\Livewire::class)) {
+            \Livewire\Livewire::component('nexus-status-grid', Http\Livewire\StatusGrid::class);
+            \Livewire\Livewire::component('nexus-webhook-log', Http\Livewire\WebhookLog::class);
+            \Livewire\Livewire::component('nexus-dead-letter-queue', Http\Livewire\DeadLetterQueue::class);
+        }
     }
 
     public function packageBooted()

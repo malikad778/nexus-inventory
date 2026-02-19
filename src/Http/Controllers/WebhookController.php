@@ -47,10 +47,28 @@ class WebhookController extends Controller
             $driver = \Adnan\LaravelNexus\Facades\Nexus::driver($channel);
             $updateDto = $driver->parseWebhookPayload($request);
 
+            // Fetch product to get previous quantity
+            try {
+                $product = $driver->fetchProduct($updateDto->remoteId);
+                $previousQuantity = $product->quantity ?? 0;
+            } catch (\Exception $e) {
+                // If we can't fetch, create a basic DTO from the update
+                $product = new \Adnan\LaravelNexus\DataTransferObjects\NexusProduct(
+                    id: $updateDto->remoteId,
+                    name: 'Product from Webhook',
+                    sku: $updateDto->sku,
+                    price: null,
+                    quantity: $updateDto->quantity,
+                    variants: collect()
+                );
+                $previousQuantity = 0;
+            }
+
             \Adnan\LaravelNexus\Events\InventoryUpdated::dispatch(
                 $channel,
-                $updateDto,
-                true
+                $product,
+                $previousQuantity,
+                $updateDto->quantity
             );
 
             DB::table('nexus_webhook_logs')->where('id', $logId)->update(['status' => 'processed']);

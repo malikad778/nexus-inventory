@@ -57,7 +57,7 @@ class WebhookControllerTest extends \Adnan\LaravelNexus\Tests\TestCase
         // Check InventoryUpdated Event
         Event::assertDispatched(\Adnan\LaravelNexus\Events\InventoryUpdated::class, function ($event) {
             return $event->channel === 'shopify' &&
-                   $event->update->remoteId === '123456';
+                   $event->product->id === '123456';
         });
     }
 

@@ -12,6 +12,7 @@
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
+    @livewireStyles
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased">
     <div class="min-h-screen flex flex-col">
@@ -59,5 +60,6 @@
              </div>
         </footer>
     </div>
+    @livewireScripts
 </body>
 </html>

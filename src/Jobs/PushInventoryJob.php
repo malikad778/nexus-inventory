@@ -49,7 +49,25 @@ class PushInventoryJob implements ShouldBeUnique, ShouldQueue
 
         $driver = Nexus::driver($this->channel);
 
-        if (! $driver->updateInventory($this->remoteId, $this->quantity)) {
+        // Fetch current state to get "previous" quantity for the event
+        try {
+            $product = $driver->fetchProduct($this->remoteId);
+            $previousQuantity = $product->quantity;
+        } catch (\Exception $e) {
+            $product = null;
+            $previousQuantity = 0;
+        }
+
+        if ($driver->updateInventory($this->remoteId, $this->quantity)) {
+            if ($product) {
+                \Adnan\LaravelNexus\Events\InventoryUpdated::dispatch(
+                    $this->channel,
+                    $product,
+                    $previousQuantity,
+                    $this->quantity
+                );
+            }
+        } else {
             $this->fail(new \Exception("Failed to update inventory for {$this->channel}: {$this->remoteId}"));
         }
     }

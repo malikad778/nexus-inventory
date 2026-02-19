@@ -25,9 +25,14 @@ class InventoryManager extends Manager
         return $this->driver($name);
     }
 
-    public function catalog(): Builders\CatalogSyncBuilder
+    public function catalog(mixed $products = null): Builders\CatalogSyncBuilder
     {
-        return new Builders\CatalogSyncBuilder;
+        return new Builders\CatalogSyncBuilder($products);
+    }
+
+    public function product(mixed $product): Builders\ProductSyncBuilder
+    {
+        return new Builders\ProductSyncBuilder($product);
     }
 
     public function batch(?string $name = null): Builders\BatchBuilder

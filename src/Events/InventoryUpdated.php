@@ -2,7 +2,7 @@
 
 namespace Adnan\LaravelNexus\Events;
 
-use Adnan\LaravelNexus\DataTransferObjects\NexusInventoryUpdate;
+use Adnan\LaravelNexus\DataTransferObjects\NexusProduct;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,7 +12,8 @@ class InventoryUpdated
 
     public function __construct(
         public string $channel,
-        public NexusInventoryUpdate $update,
-        public bool $success
+        public NexusProduct $product,
+        public int $previousQuantity,
+        public int $newQuantity
     ) {}
 }

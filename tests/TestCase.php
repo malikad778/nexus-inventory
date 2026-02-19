@@ -26,9 +26,15 @@ class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             NexusServiceProvider::class,
         ];
+
+        if (class_exists(\Livewire\LivewireServiceProvider::class)) {
+            $providers[] = \Livewire\LivewireServiceProvider::class;
+        }
+
+        return $providers;
     }
 
     public function getEnvironmentSetUp($app)

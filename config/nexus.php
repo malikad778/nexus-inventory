@@ -20,12 +20,14 @@ return [
             'access_token' => env('SHOPIFY_ACCESS_TOKEN'),
             'api_version' => '2024-01',
             'location_id' => env('SHOPIFY_LOCATION_ID'),
+            'webhook_secret' => env('SHOPIFY_WEBHOOK_SECRET'),
         ],
 
         'woocommerce' => [
             'store_url' => env('WOOCOMMERCE_STORE_URL'),
             'consumer_key' => env('WOOCOMMERCE_CONSUMER_KEY'),
             'consumer_secret' => env('WOOCOMMERCE_CONSUMER_SECRET'),
+            'webhook_secret' => env('WOOCOMMERCE_WEBHOOK_SECRET'),
         ],
 
         'amazon' => [
@@ -43,6 +45,7 @@ return [
             'refresh_token' => env('ETSY_REFRESH_TOKEN'),
             'access_token' => env('ETSY_ACCESS_TOKEN'),
             'shop_id' => env('ETSY_SHOP_ID'),
+            'webhook_secret' => env('ETSY_WEBHOOK_SECRET'),
         ],
     ],
 

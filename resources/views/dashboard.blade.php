@@ -68,39 +68,5 @@
 
     <!-- Channel Status -->
     <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">Channel Status</h2>
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-        <ul class="divide-y divide-gray-200">
-            @foreach($stats['channels'] as $channel)
-            <li>
-                <div class="px-4 py-4 sm:px-6">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <p class="text-sm font-medium text-indigo-600 truncate">{{ $channel['name'] }}</p>
-                            @if(!$channel['configured'])
-                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                    Not Configured
-                                </span>
-                            @elseif($channel['status'] === 'healthy')
-                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Healthy
-                                </span>
-                            @else
-                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    Issues Detected
-                                </span>
-                            @endif
-                        </div>
-                        <div class="ml-2 flex-shrink-0 flex">
-                            @if($channel['errors_24h'] > 0)
-                                <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    {{ $channel['errors_24h'] }} Errors (24h)
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </li>
-            @endforeach
-        </ul>
-    </div>
+    @livewire('nexus-status-grid')
 @endsection

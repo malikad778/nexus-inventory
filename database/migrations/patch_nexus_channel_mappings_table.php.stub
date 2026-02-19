@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('nexus_channel_mappings')) {
+            Schema::table('nexus_channel_mappings', function (Blueprint $table) {
+                if (!Schema::hasColumn('nexus_channel_mappings', 'remote_sku')) {
+                    $table->string('remote_sku')->nullable()->after('remote_id');
+                }
+                if (!Schema::hasColumn('nexus_channel_mappings', 'channel_meta')) {
+                    $table->json('channel_meta')->nullable()->after('remote_sku');
+                }
+            });
+        }
+    }
+
+    public function down()
+    {
+        if (Schema::hasTable('nexus_channel_mappings')) {
+            Schema::table('nexus_channel_mappings', function (Blueprint $table) {
+                $table->dropColumn(['remote_sku', 'channel_meta']);
+            });
+        }
+    }
+};
