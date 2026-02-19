@@ -21,7 +21,7 @@ jobs:
           zip -r "laravel-nexus-${{ github.event.release.tag_name }}.zip" . -x ".git/*" ".github/*" "tests/*" "phpunit.xml" "phpstan.neon.dist" ".editorconfig" ".gitattributes" ".gitignore"
 
       - name: Attest Build Provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v3
         with:
           subject-path: "laravel-nexus-${{ github.event.release.tag_name }}.zip"
 
