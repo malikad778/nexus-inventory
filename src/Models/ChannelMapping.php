@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property string $remote_id
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $syncable
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $syncable
  */
 class ChannelMapping extends Model
 {

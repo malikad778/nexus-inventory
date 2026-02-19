@@ -48,7 +48,7 @@ class ChannelSyncBatchJob implements ShouldQueue
             ->with('syncable')
             ->chunk(100, function ($mappings) use (&$processedCount) {
                 foreach ($mappings as $mapping) {
-                    if ($mapping->syncable && isset($mapping->syncable->quantity)) {
+                    if (isset($mapping->syncable?->quantity)) {
                         PushInventoryJob::dispatch(
                             $this->channel,
                             $mapping->remote_id,
