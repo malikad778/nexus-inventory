@@ -51,8 +51,7 @@ class ProductSyncBuilder
             // In a sync() call from the builder, we might want to dispatch it to the queue
             // but the spec example `Nexus::product($product)->updateInventory(42)->sync(['shopify'])`
             // implies an immediate or at least orchestrated action.
-
-            $results[$channel] = PushInventoryJob::dispatch($channel, $update);
+            $results[$channel] = PushInventoryJob::dispatch($channel, $update->remoteId, (int) $update->quantity);
         }
 
         return $results;
@@ -76,7 +75,7 @@ class ProductSyncBuilder
     protected function resolveSku(): string
     {
         if ($this->product instanceof Model) {
-            return $this->product->sku ?? (string) $this->product->id;
+            return $this->product->sku ?? (string) $this->product->getKey();
         }
 
         if (is_array($this->product)) {

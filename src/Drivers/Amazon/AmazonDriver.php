@@ -179,7 +179,7 @@ class AmazonDriver implements InventoryDriver
 
     public function getWebhookVerifier(): \Adnan\LaravelNexus\Contracts\WebhookVerifier
     {
-        return new \Adnan\LaravelNexus\Webhooks\Verifiers\AmazonWebhookVerifier($this->config);
+        return new \Adnan\LaravelNexus\Webhooks\Verifiers\AmazonWebhookVerifier;
     }
 
     public function parseWebhookPayload(Request $request): NexusInventoryUpdate
