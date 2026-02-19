@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('nexus_channel_mappings', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('syncable');
+            $table->string('channel');
+            $table->string('remote_id');
+            $table->timestamp('last_synced_at')->nullable();
+            $table->timestamps();
+
+            $table->unique(['channel', 'remote_id']);
+            $table->index(['syncable_type', 'syncable_id', 'channel']);
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('nexus_channel_mappings');
+    }
+};

@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('nexus_webhook_logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('channel');
+            $table->string('topic')->nullable();
+            $table->longText('payload'); // JSON payload
+            $table->text('headers')->nullable(); // JSON headers
+            $table->string('status')->default('pending'); // pending, processed, failed
+            $table->text('exception')->nullable();
+            $table->timestamps();
+            
+            $table->index(['channel', 'status']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('nexus_webhook_logs');
+    }
+};
