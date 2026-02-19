@@ -19,7 +19,7 @@ class StatusGrid extends Component
                 ->where('was_limited', true)
                 ->latest()
                 ->first();
-            
+
             $health = 'Connected';
             if ($lastThrottle && \Illuminate\Support\Carbon::parse($lastThrottle->created_at)->diffInMinutes() < 10) {
                 $health = 'Throttled';
