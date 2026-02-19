@@ -50,5 +50,11 @@ class TestCase extends Orchestra
 
         $migration = include __DIR__.'/../database/migrations/create_nexus_webhook_table.php.stub';
         $migration->up();
+
+        $migration = include __DIR__.'/../database/migrations/patch_nexus_channel_mappings_table.php.stub';
+        $migration->up();
+
+        $migration = include __DIR__.'/../database/migrations/create_audit_remediation_tables.php.stub';
+        $migration->up();
     }
 }

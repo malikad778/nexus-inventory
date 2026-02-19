@@ -15,8 +15,8 @@ class StatusGrid extends Component
         foreach ($drivers as $driver) {
             $stats[$driver] = [
                 'health' => 'Healthy', // Basic mockup of logic
-                'last_sync' => NexusSyncJob::where('channel', $driver)->latest()->value('completed_at'),
-                'pending' => NexusSyncJob::where('channel', $driver)->whereNull('completed_at')->count(),
+                'last_sync' => NexusSyncJob::where('channel', $driver)->latest()->value('finished_at'),
+                'pending' => NexusSyncJob::where('channel', $driver)->whereNull('finished_at')->count(),
             ];
         }
 
