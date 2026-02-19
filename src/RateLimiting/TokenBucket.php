@@ -52,6 +52,10 @@ class TokenBucket
             end
 LUA;
 
+        // PHPStan expects Phpredis signature: eval(script, args[], num_keys)
+        // We use the raw command signature supported by Laravel's Redis facade (Predis/PhpRedis dynamic proxy).
+        
+        /** @phpstan-ignore-next-line */
         $result = Redis::eval($script, 1, "nexus:limiter:{$key}", $capacity, $rate, $cost, microtime(true));
 
         return (bool) $result;

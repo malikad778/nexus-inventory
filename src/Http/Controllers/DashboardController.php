@@ -69,7 +69,8 @@ class DashboardController extends Controller
     {
         $job = DB::table('nexus_dead_letter_queue')->find($id);
 
-        if ($job && $job->status === 'failed') {
+        // PHPStan might infer array|object, force explicit object check or type hint
+        if ($job && is_object($job) && $job->status === 'failed') {
             // Dispatch the job again
             // We need to reconstruct the job object from payload?
             // Or typically, we just push the class and payload back to queue.
