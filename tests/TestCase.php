@@ -30,8 +30,8 @@ class TestCase extends Orchestra
             NexusServiceProvider::class,
         ];
 
-        if (class_exists(\Livewire\LivewireServiceProvider::class)) {
-            $providers[] = \Livewire\LivewireServiceProvider::class;
+        if (class_exists('Livewire\LivewireServiceProvider')) {
+            $providers[] = 'Livewire\LivewireServiceProvider';
         }
 
         return $providers;
