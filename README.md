@@ -117,11 +117,6 @@ Run the test suite:
 composer test
 ```
 
-## Credits
-
--   [Adnan](https://github.com/adnan)
--   [All Contributors](../../contributors)
-
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
