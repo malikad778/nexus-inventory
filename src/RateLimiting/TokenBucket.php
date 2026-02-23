@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Redis;
 
 class TokenBucket
 {
-    
-
     public function acquire(string $key, int $capacity, float $rate, int $cost = 1): bool
     {
         $script = <<<'LUA'
@@ -20,36 +18,28 @@ class TokenBucket
             local last_refill = tonumber(redis.call('HGET', key, 'last_refill') or now)
             local tokens = tonumber(redis.call('HGET', key, 'tokens') or capacity)
 
-            -- Refill tokens
             local delta = math.max(0, now - last_refill)
             local tokens_to_add = delta * rate
             tokens = math.min(capacity, tokens + tokens_to_add)
 
             if tokens >= cost then
                 tokens = tokens - cost
-                -- Update state with new timestamp only if we consumed tokens? 
-                -- Actually, we should update timestamp regardless if we refilled, 
-                -- effectively moving the "last refill" window forward.
-                -- But simple implementation: set last_refill to now.
-                
                 redis.call('HSET', key, 'last_refill', now, 'tokens', tokens)
-                redis.call('EXPIRE', key, 60 * 60) -- Expire in 1 hour if unused
+                redis.call('EXPIRE', key, 3600)
                 return 1
             else
-                -- We verify pass, but don't consume/update if failed?
-                -- Or standard leaky bucket updates the refill even on failure.
-                -- Let's update the refill state so next check is accurate.
-                
                 redis.call('HSET', key, 'last_refill', now, 'tokens', tokens)
-                redis.call('EXPIRE', key, 60 * 60)
+                redis.call('EXPIRE', key, 3600)
                 return 0
             end
 LUA;
 
-        
-        
-        
-        $result = Redis::eval($script, 1, "nexus:limiter:{$key}", $capacity, $rate, $cost, microtime(true));
+        /** @var int $result */
+        $result = Redis::eval(
+            $script,
+            ["nexus:limiter:{$key}", (string) $capacity, (string) $rate, (string) $cost, (string) microtime(true)],
+            1
+        );
 
         return (bool) $result;
     }
