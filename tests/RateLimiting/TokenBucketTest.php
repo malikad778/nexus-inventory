@@ -7,11 +7,12 @@ it('can acquire tokens', function () {
     
     Redis::shouldReceive('eval')
         ->once()
-        ->withArgs(function ($script, $numKeys, $key, $capacity, $rate, $cost, $time) {
-            return $key === 'nexus:limiter:test_channel' &&
-                   $capacity === 10 &&
-                   $rate === 1.0 &&
-                   $cost === 1;
+        ->withArgs(function (string $script, array $args, int $numKeys) {
+            return $args[0] === 'nexus:limiter:test_channel' &&
+                   $args[1] === '10' &&
+                   $args[2] === '1' &&
+                   $args[3] === '1' &&
+                   $numKeys === 1;
         })
         ->andReturn(1);
 
