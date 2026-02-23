@@ -1,0 +1,63 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        // 1. Fix DLQ Table
+        Schema::table('nexus_dead_letter_queue', function (Blueprint $table) {
+            // Rename exception -> last_exception (if needed by spec, or just keep as is)
+            // Audit says: last_exception (text) vs exception (text) - OK Minor rename
+            // failed_at (timestamp) vs last_attempt_at (timestamp) - Semantic difference
+            
+            if (!Schema::hasColumn('nexus_dead_letter_queue', 'failed_at')) {
+                $table->timestamp('failed_at')->nullable()->after('status');
+            }
+            if (!Schema::hasColumn('nexus_dead_letter_queue', 'last_exception')) {
+                 // We will alias/add this to satisfy spec stricter requirements if needed, 
+                 // but typically exception is fine. Let's add failed_at as requested.
+            }
+        });
+
+        // 2. Create nexus_sync_jobs
+        if (!Schema::hasTable('nexus_sync_jobs')) {
+            Schema::create('nexus_sync_jobs', function (Blueprint $table) {
+                $table->id();
+                $table->string('type'); // catalog, channel, push
+                $table->string('batch_id')->nullable()->index();
+                $table->string('status'); // pending, processing, failed, resolved, retried
+                $table->json('meta')->nullable();
+                $table->timestamp('started_at')->nullable();
+                $table->timestamp('finished_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        // 3. Create nexus_rate_limit_logs
+        if (!Schema::hasTable('nexus_rate_limit_logs')) {
+            Schema::create('nexus_rate_limit_logs', function (Blueprint $table) {
+                $table->id();
+                $table->string('channel')->index();
+                $table->string('bucket_key');
+                $table->integer('tokens_consumed');
+                $table->integer('tokens_remaining');
+                $table->boolean('was_limited');
+                $table->timestamps();
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('nexus_rate_limit_logs');
+        Schema::dropIfExists('nexus_sync_jobs');
+        
+        Schema::table('nexus_dead_letter_queue', function (Blueprint $table) {
+            $table->dropColumn(['failed_at']);
+        });
+    }
+};
