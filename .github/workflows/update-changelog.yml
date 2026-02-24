@@ -26,17 +26,24 @@ jobs:
           release-notes: ${{ github.event.release.body }}
 
       - name: Commit and push changelog branch
+        id: commit
         run: |
           BRANCH="chore/update-changelog-${{ github.event.release.name }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add CHANGELOG.md
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to commit"
+            exit 0
+          fi
           git commit -m "docs: update changelog for ${{ github.event.release.name }}"
           git push --force origin "$BRANCH"
+          echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
