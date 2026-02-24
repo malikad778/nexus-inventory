@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update:
@@ -14,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: main
 
@@ -27,7 +28,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: "chore/update-changelog-${{ github.event.release.name }}"
           title: "docs: update changelog for ${{ github.event.release.name }}"
           commit-message: "docs: update changelog"
           body: "Automatically generated pull request to update the changelog for the latest release."
+          delete-branch: true
