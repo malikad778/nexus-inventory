@@ -2,9 +2,11 @@
 
 namespace Malikad778\LaravelNexus\Http\Livewire;
 
+use Livewire\Attributes\Poll;
 use Livewire\Component;
 use Malikad778\LaravelNexus\Models\NexusSyncJob;
 
+#[Poll(3000)]
 class StatusGrid extends Component
 {
     public function render()

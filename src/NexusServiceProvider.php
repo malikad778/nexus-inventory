@@ -45,22 +45,29 @@ class NexusServiceProvider extends PackageServiceProvider
         }
 
         $this->app['events']->listen(JobFailed::class, function ($event) {
-            
             if (str_starts_with($event->job->resolveName(), 'Malikad778\LaravelNexus')) {
                 try {
+                    // Try to extract the channel from the serialized job command data.
+                    $rawPayload = $event->job->payload();
+                    $channel = null;
+                    if (isset($rawPayload['data']['command'])) {
+                        $command = @unserialize($rawPayload['data']['command']);
+                        $channel = $command->channel ?? null;
+                    }
+
                     DB::table('nexus_dead_letter_queue')->insert([
-                        'channel' => null, 
-                        'job_class' => $event->job->resolveName(),
-                        'payload' => json_encode($event->job->payload()),
-                        'exception' => (string) $event->exception,
-                        'status' => 'failed',
-                        'attempts' => $event->job->attempts(),
+                        'channel'         => $channel,
+                        'job_class'       => $event->job->resolveName(),
+                        'payload'         => json_encode($rawPayload),
+                        'exception'       => (string) $event->exception,
+                        'status'          => 'failed',
+                        'attempts'        => $event->job->attempts(),
                         'last_attempt_at' => now(),
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'created_at'      => now(),
+                        'updated_at'      => now(),
                     ]);
                 } catch (Exception $e) {
-                    
+                    //
                 }
             }
         });

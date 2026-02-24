@@ -62,6 +62,12 @@ class PushInventoryJob implements ShouldBeUnique, ShouldQueue
         }
 
         if ($driver->updateInventory($this->remoteId, $this->quantity)) {
+            // Stamp last_synced_at on the channel mapping so the dashboard can show
+            // per-channel freshness data without a separate query.
+            \Malikad778\LaravelNexus\Models\ChannelMapping::where('channel', $this->channel)
+                ->where('remote_id', $this->remoteId)
+                ->update(['last_synced_at' => now()]);
+
             if ($product) {
                 InventoryUpdated::dispatch(
                     $this->channel,

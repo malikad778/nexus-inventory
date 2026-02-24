@@ -11,11 +11,6 @@ class ShopifyWebhookVerifier implements WebhookVerifier
     public function verify(Request $request): bool
     {
         $signature = $request->header('X-Shopify-Hmac-Sha256');
-        $secret = Config::get('nexus.drivers.shopify.access_token'); 
-
-        
-        
-        
         $secret = Config::get('nexus.drivers.shopify.webhook_secret') ?? Config::get('nexus.drivers.shopify.client_secret');
 
         if (! $signature || ! $secret) {

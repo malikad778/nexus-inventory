@@ -43,9 +43,9 @@ return [
     ],
 
     'rate_limits' => [
-        'shopify' => ['capacity' => 10, 'rate' => 2.0], 
-        'woocommerce' => ['capacity' => 20, 'rate' => 5.0],
-        'amazon' => ['capacity' => 5, 'rate' => 0.5], 
-        'etsy' => ['capacity' => 10, 'rate' => 10.0],
+        'shopify'     => ['capacity' => 40,  'rate' => 2.0],
+        'woocommerce' => ['capacity' => 100, 'rate' => 25.0],
+        'amazon'      => ['capacity' => 10,  'rate' => 1.0],
+        'etsy'        => ['capacity' => 50,  'rate' => 10.0],
     ],
 ];

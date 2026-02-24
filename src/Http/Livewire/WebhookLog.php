@@ -3,9 +3,11 @@
 namespace Malikad778\LaravelNexus\Http\Livewire;
 
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Poll;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Poll(5000)]
 class WebhookLog extends Component
 {
     use WithPagination;
