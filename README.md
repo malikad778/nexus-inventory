@@ -1,4 +1,4 @@
-# Laravel Nexus
+# Nexus Inventory
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/malikad778/nexus-inventory.svg?style=flat-square)](https://packagist.org/packages/malikad778/nexus-inventory)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/malikad778/nexus-inventory/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/malikad778/nexus-inventory/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -8,11 +8,11 @@
 
 **A unified, driver-based Laravel package for synchronizing products and inventory across multiple e-commerce channels — Shopify, WooCommerce, Amazon SP-API, and Etsy.**
 
-Laravel Nexus is not a SaaS platform. It is a drop-in Composer package that lives inside your Laravel application, giving you full code-level control over every sync, every webhook, and every rate limit — for free.
+Nexus Inventory is not a SaaS platform. It is a drop-in Composer package that lives inside your Laravel application, giving you full code-level control over every sync, every webhook, and every rate limit — for free.
 
 ---
 
-## Why Laravel Nexus?
+## Why Nexus Inventory?
 
 The multi-channel commerce problem is real and expensive. When a product sells on Amazon, your Shopify stock must decrement in seconds — not minutes. Every channel has its own API, its own authentication scheme, its own rate limits, and its own webhook signature format. Solving this from scratch takes months.
 
@@ -24,7 +24,7 @@ The existing options leave developers stuck:
 | **DIY integrations** | 6–12 weeks per channel, brittle, non-reusable |
 | **Channel-specific packages** | Siloed — no unified DTO, no cross-channel orchestration |
 
-**Laravel Nexus fills the gap.** It provides a production-grade, extensible foundation — a unified driver interface, a fluent API, distributed rate limiting, secure webhook handling, job batching, and a real-time dashboard — all installable in minutes via Composer.
+**Nexus Inventory fills the gap.** It provides a production-grade, extensible foundation — a unified driver interface, a fluent API, distributed rate limiting, secure webhook handling, job batching, and a real-time dashboard — all installable in minutes via Composer.
 
 ---
 
