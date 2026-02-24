@@ -5,10 +5,12 @@ namespace Malikad778\LaravelNexus\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use Malikad778\LaravelNexus\Traits\Syncable;
 
 class CatalogSyncJob implements ShouldQueue
 {
@@ -20,6 +22,7 @@ class CatalogSyncJob implements ShouldQueue
      *         attribute and a `channelMappings` relationship).  When null the job
      *         falls back to a full-catalog sync via ChannelSyncBatchJob.
      * @param  array  $channels  Limit the sync to these channels (empty = all configured).
+     * @phpstan-param \Illuminate\Database\Eloquent\Collection<int, Model&Syncable>|null $products
      */
     public function __construct(
         public readonly ?Collection $products = null,
