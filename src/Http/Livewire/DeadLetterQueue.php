@@ -15,13 +15,10 @@ class DeadLetterQueue extends Component
     {
         $record = NexusDeadLetterQueue::findOrFail($id);
 
-        $payload = is_array($record->payload) ? $record->payload : json_decode($record->payload, true);
-
-        if (! empty($payload)) {
-            // Re-push the raw serialized job payload directly onto the nexus queue.
-            // The payload stored by Laravel's JobFailed event is the full job JSON
-            // that the queue worker understands, so we can push it verbatim.
-            Queue::pushRaw(json_encode($payload), 'nexus');
+        // The model casts `payload` as 'array', so Eloquent already decoded it.
+        // We just re-encode it to push raw JSON back onto the queue.
+        if (! empty($record->payload)) {
+            Queue::pushRaw(json_encode($record->payload), 'nexus');
         }
 
         $record->delete();
@@ -47,10 +44,9 @@ class DeadLetterQueue extends Component
 
         $count = 0;
         foreach ($failed as $record) {
-            $payload = is_array($record->payload) ? $record->payload : json_decode($record->payload, true);
-
-            if (! empty($payload)) {
-                Queue::pushRaw(json_encode($payload), 'nexus');
+            // The model casts `payload` as 'array', so Eloquent already decoded it.
+            if (! empty($record->payload)) {
+                Queue::pushRaw(json_encode($record->payload), 'nexus');
                 $record->delete();
                 $count++;
             }
