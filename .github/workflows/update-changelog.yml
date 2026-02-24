@@ -34,7 +34,7 @@ jobs:
           git add CHANGELOG.md
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "docs: update changelog for ${{ github.event.release.name }}"
-          git push origin "$BRANCH"
+          git push --force origin "$BRANCH"
 
       - name: Create Pull Request
         env:
@@ -44,4 +44,5 @@ jobs:
             --base main \
             --head "chore/update-changelog-${{ github.event.release.name }}" \
             --title "docs: update changelog for ${{ github.event.release.name }}" \
-            --body "Automatically generated pull request to update the changelog for the latest release."
+            --body "Automatically generated pull request to update the changelog for the latest release." \
+          || echo "PR already exists or could not be created, skipping."
