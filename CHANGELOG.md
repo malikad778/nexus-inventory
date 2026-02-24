@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `adnan/laravel-nexus` will be documented in this file.
+All notable changes to `adnan/nexus-inventory` will be documented in this file.
 
 ## v1.1.0 - 2026-02-19
 
@@ -21,8 +21,8 @@ All notable changes to `adnan/laravel-nexus` will be documented in this file.
 ### Security
 - Mandatory signature verification for all drivers via dedicated verifier classes.
 
-**Full Changelog**: https://github.com/malikad778/laravel-nexus/compare/v1.0.0...v1.1.0
+**Full Changelog**: https://github.com/malikad778/nexus-inventory/compare/v1.0.0...v1.1.0
 
 ## v1.0.0 - 2026-02-19
 
-**Full Changelog**: https://github.com/malikad778/laravel-nexus/commits/v1.0.0
+**Full Changelog**: https://github.com/malikad778/nexus-inventory/commits/v1.0.0

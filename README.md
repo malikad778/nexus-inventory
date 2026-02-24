@@ -1,10 +1,10 @@
 # Laravel Nexus
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/malikad778/laravel-nexus.svg?style=flat-square)](https://packagist.org/packages/malikad778/laravel-nexus)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/malikad778/laravel-nexus/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/malikad778/laravel-nexus/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/malikad778/laravel-nexus/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/malikad778/laravel-nexus/actions?query=workflow%3A%22Fix+PHP+code+style+issues%22+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/malikad778/laravel-nexus.svg?style=flat-square)](https://packagist.org/packages/malikad778/laravel-nexus)
-[![License](https://img.shields.io/packagist/l/malikad778/laravel-nexus.svg?style=flat-square)](LICENSE.md)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/malikad778/nexus-inventory.svg?style=flat-square)](https://packagist.org/packages/malikad778/nexus-inventory)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/malikad778/nexus-inventory/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/malikad778/nexus-inventory/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/malikad778/nexus-inventory/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/malikad778/nexus-inventory/actions?query=workflow%3A%22Fix+PHP+code+style+issues%22+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/malikad778/nexus-inventory.svg?style=flat-square)](https://packagist.org/packages/malikad778/nexus-inventory)
+[![License](https://img.shields.io/packagist/l/malikad778/nexus-inventory.svg?style=flat-square)](LICENSE.md)
 
 **A unified, driver-based Laravel package for synchronizing products and inventory across multiple e-commerce channels — Shopify, WooCommerce, Amazon SP-API, and Etsy.**
 
@@ -186,7 +186,7 @@ The `channelMeta` field preserves the raw channel payload so channel-specific da
 ## Installation
 
 ```bash
-composer require malikad778/laravel-nexus
+composer require malikad778/nexus-inventory
 ```
 
 Publish the config file and migrations:

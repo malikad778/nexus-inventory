@@ -1,14 +1,17 @@
 {
-    "name": "malikad778/laravel-nexus",
+    "name": "malikad778/nexus-inventory",
     "description": "Multi-channel inventory synchronization for Laravel.",
     "keywords": [
-        "malikad778",
         "laravel",
-        "laravel-nexus",
+        "nexus-inventory",
         "inventory",
-        "synchronization"
+        "synchronization",
+        "shopify",
+        "woocommerce",
+        "amazon",
+        "etsy"
     ],
-    "homepage": "https://github.com/malikad778/laravel-nexus",
+    "homepage": "https://github.com/malikad778/nexus-inventory",
     "license": "MIT",
     "authors": [
         {
