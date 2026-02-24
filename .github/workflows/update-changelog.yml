@@ -3,6 +3,16 @@ name: "Update Changelog"
 on:
   release:
     types: [released]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to'
+        required: true
+        default: 'v1.0.1'
+      body:
+        description: 'Release notes'
+        required: false
+        default: 'Manual update'
 
 permissions:
   contents: write
@@ -19,26 +29,31 @@ jobs:
         with:
           ref: main
 
+      - name: Set variables
+        run: |
+          echo "VERSION=${{ github.event.inputs.version || github.event.release.name }}" >> $GITHUB_ENV
+          echo "BODY=${{ github.event.inputs.body || github.event.release.body }}" >> $GITHUB_ENV
+
       - name: Update Changelog
         uses: stefanzweifel/changelog-updater-action@v1
         with:
-          latest-version: ${{ github.event.release.name }}
-          release-notes: ${{ github.event.release.body }}
+          latest-version: ${{ env.VERSION }}
+          release-notes: ${{ env.BODY }}
 
       - name: Commit and push changelog branch
         id: commit
         run: |
-          BRANCH="chore/update-changelog-${{ github.event.release.name }}"
+          BRANCH="chore/update-changelog-${{ env.VERSION }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git add CHANGELOG.md
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "docs: update changelog for ${{ github.event.release.name }}"
+          git commit -m "docs: update changelog for ${{ env.VERSION }}"
           git push --force origin "$BRANCH"
           echo "changed=true" >> $GITHUB_OUTPUT
 
@@ -49,7 +64,7 @@ jobs:
         run: |
           gh pr create \
             --base main \
-            --head "chore/update-changelog-${{ github.event.release.name }}" \
-            --title "docs: update changelog for ${{ github.event.release.name }}" \
+            --head "chore/update-changelog-${{ env.VERSION }}" \
+            --title "docs: update changelog for ${{ env.VERSION }}" \
             --body "Automatically generated pull request to update the changelog for the latest release." \
           || echo "PR already exists or could not be created, skipping."
