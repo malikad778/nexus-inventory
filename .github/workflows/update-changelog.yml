@@ -25,15 +25,23 @@ jobs:
           latest-version: ${{ github.event.release.name }}
           release-notes: ${{ github.event.release.body }}
 
-      - name: Remove runner-level git auth (prevents duplicate Authorization header)
-        run: git config --global --unset http.https://github.com/.extraheader || true
+      - name: Commit and push changelog branch
+        run: |
+          BRANCH="chore/update-changelog-${{ github.event.release.name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add CHANGELOG.md
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "docs: update changelog for ${{ github.event.release.name }}"
+          git push origin "$BRANCH"
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "chore/update-changelog-${{ github.event.release.name }}"
-          title: "docs: update changelog for ${{ github.event.release.name }}"
-          commit-message: "docs: update changelog"
-          body: "Automatically generated pull request to update the changelog for the latest release."
-          delete-branch: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "chore/update-changelog-${{ github.event.release.name }}" \
+            --title "docs: update changelog for ${{ github.event.release.name }}" \
+            --body "Automatically generated pull request to update the changelog for the latest release."
